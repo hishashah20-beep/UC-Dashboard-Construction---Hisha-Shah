@@ -7,7 +7,7 @@ st.set_page_config(page_title="UC Admit Rates by Campus", layout="centered")
 st.title("UC Admit Rate by Campus")
 st.write(
     "How did UC admit rates differ across the nine campuses for Bay Area "
-    "high school applicants from years 2005 to 2025?"
+    "high school applicants from years 2010 to 2025?"
 )
 
 @st.cache_data
@@ -17,8 +17,9 @@ def load_data():
 
 df = load_data()
 
-# Let the user pick the year, defaulting to 2025
-years = sorted(df.fall_term.unique())
+# Only offer years that actually have per-campus data.
+# Fall 2005-2009 only has "Universitywide" totals, no campus breakdown.
+years = sorted(df[df.campus != "Universitywide"].fall_term.unique())
 selected_year = st.selectbox("Fall term", years, index=years.index(2025))
 
 y = df[(df.fall_term == selected_year) & (df.campus != "Universitywide")]
@@ -42,4 +43,3 @@ st.pyplot(fig)
 
 st.subheader("Underlying numbers")
 st.dataframe(campus_summary.set_index("campus"))
-#add streamlit dashboard
