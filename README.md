@@ -54,4 +54,4 @@ across two decades.
 
 ## Live app
 
-Deployed via Streamlit Community Cloud: *(paste your share.streamlit.io link here)*
+Deployed via Streamlit Community Cloud: *(https://uc-dashboard-construction---hisha-24qhqujecdftnodmwful9a.streamlit.app/)*
