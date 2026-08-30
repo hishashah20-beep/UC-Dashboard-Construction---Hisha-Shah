@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
 # ---- Page setup ----
@@ -219,5 +220,50 @@ st.caption(
     "the source data suppresses small group counts for privacy, so some "
     "students aren't captured in any demographic category above."
 )
+
+st.divider()
+st.subheader("📐 Academic outcomes vs. admit rate")
+
+outcome_campus = st.selectbox("Campus", sorted(y.campus.unique()), key="outcome_campus")
+outcome_data = y[y.campus == outcome_campus].copy()
+outcome_data["admits"] = outcome_data["admits"].fillna(0)
+
+outcome_summary = (
+    outcome_data.groupby("high_school")
+    .agg(
+        total_applicants=("applicants", "sum"),
+        total_admits=("admits", "sum"),
+        math_score=("caaspp_mathematics_mean_score", "mean"),
+    )
+    .assign(admit_rate=lambda d: d.total_admits / d.total_applicants)
+    .dropna(subset=["math_score"])
+    .reset_index()
+)
+
+if len(outcome_summary) >= 2:
+    corr = np.corrcoef(outcome_summary.math_score, outcome_summary.admit_rate)[0, 1]
+    slope, intercept = np.polyfit(outcome_summary.math_score, outcome_summary.admit_rate, 1)
+
+    fig5, ax5 = plt.subplots(figsize=(7, 4.5))
+    ax5.scatter(outcome_summary.math_score, outcome_summary.admit_rate,
+                color=ACCENT, alpha=0.7, s=40)
+
+    x_line = np.linspace(outcome_summary.math_score.min(), outcome_summary.math_score.max(), 50)
+    ax5.plot(x_line, slope * x_line + intercept, color=AVG_COLOR, linewidth=2,
+              label=f"Trend (r = {corr:.2f})")
+
+    ax5.set_xlabel("School's CAASPP math mean score")
+    ax5.set_ylabel("Admit rate at this campus")
+    ax5.set_title(f"{outcome_campus} — school math scores vs. admit rate, fall {selected_year}", fontsize=11)
+    ax5.legend(frameon=False)
+    st.pyplot(fig5)
+
+    st.caption(
+        f"Correlation coefficient r = {corr:.2f} across {len(outcome_summary)} schools "
+        f"with available CAASPP math data. r close to 0 means little relationship; "
+        f"closer to 1 or -1 means a stronger positive or negative relationship."
+    )
+else:
+    st.info("Not enough schools with CAASPP math data for this campus/year to plot a trend.")
 
 st.caption("Built for the UC Dashboard Construction hackathon project · Data: UC Information Center + California Department of Education")
