@@ -51,3 +51,46 @@ st.dataframe(
         )
     },
 )
+
+st.divider()
+st.subheader("Drill into a specific high school")
+
+# Get schools available in the selected year (same filter as campus_summary)
+schools = sorted(y.high_school.dropna().unique())
+selected_school = st.selectbox("High school", schools)
+
+school_data = y[y.high_school == selected_school].copy()
+school_data["admits"] = school_data["admits"].fillna(0)
+
+school_summary = (
+    school_data.groupby("campus")
+    .agg(total_applicants=("applicants", "sum"),
+         total_admits=("admits", "sum"))
+    .assign(admit_rate=lambda d: d.total_admits / d.total_applicants)
+    .reset_index()
+    .sort_values("admit_rate")
+)
+
+fig2, ax2 = plt.subplots()
+ax2.barh(school_summary.campus, school_summary.admit_rate, label=selected_school)
+
+# Overlay the Bay Area-wide average per campus as reference marks
+for _, row in campus_summary.iterrows():
+    y_pos = school_summary.campus.tolist().index(row.campus) if row.campus in school_summary.campus.values else None
+    if y_pos is not None:
+        ax2.scatter(row.admit_rate, y_pos, color="red", zorder=3,
+                    label="Bay Area avg" if y_pos == 0 else None)
+
+ax2.set_xlabel("Admit rate")
+ax2.set_title(f"{selected_school} — admit rate by campus, fall {selected_year}")
+ax2.legend()
+st.pyplot(fig2)
+
+st.dataframe(
+    school_summary.set_index("campus").assign(
+        admit_rate=lambda d: (d.admit_rate * 100)
+    ),
+    column_config={
+        "admit_rate": st.column_config.NumberColumn("admit_rate", format="%.1f%%")
+    },
+)
