@@ -166,4 +166,58 @@ ax3.set_title("Admit rate by campus, 2010–2025", fontsize=11)
 ax3.legend(bbox_to_anchor=(1.02, 1), loc="upper left", fontsize="small", frameon=False)
 st.pyplot(fig3, use_container_width=True)
 
+st.divider()
+st.subheader("🧑‍🤝‍🧑 Admit rate by demographic group")
+
+DEMO_GROUPS = {
+    "African American": ("adm_african_american", "app_african_american"),
+    "American Indian": ("adm_american_indian", "app_american_indian"),
+    "Asian": ("adm_asian", "app_asian"),
+    "Hispanic/Latinx": ("adm_hispanic_latinx", "app_hispanic_latinx"),
+    "International": ("adm_int_l", "app_int_l"),
+    "Pacific Islander": ("adm_pacific_islander", "app_pacific_islander"),
+    "White": ("adm_white", "app_white"),
+    "Domestic, unknown": ("adm_domestic_unknown", "app_domestic_unknown"),
+}
+
+demo_campus = st.selectbox("Campus", sorted(y.campus.unique()), key="demo_campus")
+demo_data = y[y.campus == demo_campus]
+
+demo_rows = []
+for group, (adm_col, app_col) in DEMO_GROUPS.items():
+    total_adm = demo_data[adm_col].sum()
+    total_app = demo_data[app_col].sum()
+    if total_app > 0:
+        demo_rows.append({
+            "group": group,
+            "total_applicants": total_app,
+            "total_admits": total_adm,
+            "admit_rate": total_adm / total_app,
+        })
+
+demo_summary = pd.DataFrame(demo_rows).sort_values("admit_rate")
+
+fig4, ax4 = plt.subplots(figsize=(7, 4.5))
+bars4 = ax4.barh(demo_summary.group, demo_summary.admit_rate, color=ACCENT)
+ax4.set_xlabel("Admit rate")
+ax4.set_title(f"{demo_campus} — admit rate by demographic group, fall {selected_year}", fontsize=11)
+ax4.bar_label(bars4, labels=[f"{v*100:.1f}%" for v in demo_summary.admit_rate],
+              padding=4, color="#FAFAFA", fontsize=9)
+st.pyplot(fig4)
+
+st.dataframe(
+    demo_summary.set_index("group").assign(
+        admit_rate=lambda d: (d.admit_rate * 100)
+    ),
+    column_config={
+        "admit_rate": st.column_config.NumberColumn("admit_rate", format="%.1f%%")
+    },
+)
+
+st.caption(
+    "Demographic subgroup counts may not sum to the overall campus total — "
+    "the source data suppresses small group counts for privacy, so some "
+    "students aren't captured in any demographic category above."
+)
+
 st.caption("Built for the UC Dashboard Construction hackathon project · Data: UC Information Center + California Department of Education")
