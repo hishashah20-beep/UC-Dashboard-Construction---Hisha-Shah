@@ -2,10 +2,34 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
-st.set_page_config(page_title="UC Admit Rates by Campus", layout="centered")
-st.title("UC Admit Rate by Campus")
-st.write(
-    "How did UC admit rates differ across the nine campuses for Bay Area "
+# ---- Page setup ----
+st.set_page_config(
+    page_title="UC Admit Rates by Campus",
+    page_icon="🎓",
+    layout="centered",
+)
+
+# ---- Shared chart style ----
+ACCENT = "#4F8BF9"
+AVG_COLOR = "#F97066"
+
+plt.rcParams.update({
+    "figure.facecolor": "none",
+    "axes.facecolor": "none",
+    "axes.edgecolor": "#3A3F4B",
+    "axes.labelcolor": "#FAFAFA",
+    "xtick.color": "#C9CDD3",
+    "ytick.color": "#C9CDD3",
+    "text.color": "#FAFAFA",
+    "axes.titleweight": "bold",
+    "axes.spines.top": False,
+    "axes.spines.right": False,
+    "font.size": 11,
+})
+
+st.title("🎓 UC Admit Rate by Campus")
+st.markdown(
+    "##### How did UC admit rates differ across the nine campuses for Bay Area "
     "high school applicants from years 2010 to 2025?"
 )
 
@@ -19,7 +43,7 @@ df = load_data()
 # Only offer years that actually have per-campus data.
 # Fall 2005-2009 only has "Universitywide" totals, no campus breakdown.
 years = sorted(df[df.campus != "Universitywide"].fall_term.unique())
-selected_year = st.selectbox("Fall term", years, index=years.index(2025))
+selected_year = st.selectbox("📅 Fall term", years, index=years.index(2025))
 
 y = df[(df.fall_term == selected_year) & (df.campus != "Universitywide")]
 
@@ -32,13 +56,25 @@ campus_summary = (
      .sort_values("admit_rate")
 )
 
-st.subheader(f"Admit rate by campus, fall {selected_year}")
-fig, ax = plt.subplots()
-ax.barh(campus_summary.campus, campus_summary.admit_rate)
+# ---- Headline metric cards ----
+most_selective = campus_summary.iloc[0]
+least_selective = campus_summary.iloc[-1]
+
+col1, col2, col3 = st.columns(3)
+col1.metric("Most selective", most_selective.campus, f"{most_selective.admit_rate * 100:.1f}%")
+col2.metric("Least selective", least_selective.campus, f"{least_selective.admit_rate * 100:.1f}%")
+col3.metric("Total Bay Area applicants", f"{int(campus_summary.total_applicants.sum()):,}")
+
+st.divider()
+st.subheader(f"📊 Admit rate by campus, fall {selected_year}")
+fig, ax = plt.subplots(figsize=(7, 4.5))
+bars = ax.barh(campus_summary.campus, campus_summary.admit_rate, color=ACCENT)
 ax.set_xlabel("UC admit rate")
+ax.bar_label(bars, labels=[f"{v*100:.1f}%" for v in campus_summary.admit_rate],
+             padding=4, color="#FAFAFA", fontsize=9)
 st.pyplot(fig)
 
-st.subheader("Underlying numbers")
+st.subheader("🔢 Underlying numbers")
 display_summary = campus_summary.set_index("campus").copy()
 display_summary["admit_rate"] = display_summary["admit_rate"] * 100
 
@@ -53,7 +89,7 @@ st.dataframe(
 )
 
 st.divider()
-st.subheader("Drill into a specific high school")
+st.subheader("🏫 Drill into a specific high school")
 
 # Get schools available in the selected year (same filter as campus_summary)
 schools = sorted(y.high_school.dropna().unique())
@@ -71,19 +107,19 @@ school_summary = (
     .sort_values("admit_rate")
 )
 
-fig2, ax2 = plt.subplots()
-ax2.barh(school_summary.campus, school_summary.admit_rate, label=selected_school)
+fig2, ax2 = plt.subplots(figsize=(7, 4.5))
+ax2.barh(school_summary.campus, school_summary.admit_rate, color=ACCENT, label=selected_school)
 
 # Overlay the Bay Area-wide average per campus as reference marks
 for _, row in campus_summary.iterrows():
     y_pos = school_summary.campus.tolist().index(row.campus) if row.campus in school_summary.campus.values else None
     if y_pos is not None:
-        ax2.scatter(row.admit_rate, y_pos, color="red", zorder=3,
+        ax2.scatter(row.admit_rate, y_pos, color=AVG_COLOR, zorder=3, s=60,
                     label="Bay Area avg" if y_pos == 0 else None)
 
 ax2.set_xlabel("Admit rate")
-ax2.set_title(f"{selected_school} — admit rate by campus, fall {selected_year}")
-ax2.legend()
+ax2.set_title(f"{selected_school} vs. Bay Area average, fall {selected_year}", fontsize=11)
+ax2.legend(frameon=False)
 st.pyplot(fig2)
 
 st.dataframe(
@@ -94,3 +130,40 @@ st.dataframe(
         "admit_rate": st.column_config.NumberColumn("admit_rate", format="%.1f%%")
     },
 )
+
+st.divider()
+st.subheader("📈 Admit rate trend over time")
+
+all_campuses = sorted(df[df.campus != "Universitywide"].campus.unique())
+selected_campuses = st.multiselect(
+    "Campuses to show", all_campuses, default=all_campuses
+)
+
+trend_data = df[(df.campus != "Universitywide") & (df.campus.isin(selected_campuses))].copy()
+trend_data["admits"] = trend_data["admits"].fillna(0)
+
+trend_summary = (
+    trend_data.groupby(["fall_term", "campus"])
+    .agg(total_applicants=("applicants", "sum"),
+         total_admits=("admits", "sum"))
+    .assign(admit_rate=lambda d: d.total_admits / d.total_applicants)
+    .reset_index()
+)
+
+palette = plt.cm.viridis
+n = max(len(selected_campuses), 1)
+
+fig3, ax3 = plt.subplots(figsize=(7, 4.5))
+for i, campus in enumerate(selected_campuses):
+    campus_trend = trend_summary[trend_summary.campus == campus].sort_values("fall_term")
+    ax3.plot(campus_trend.fall_term, campus_trend.admit_rate,
+              marker="o", markersize=4, linewidth=2,
+              color=palette(i / max(n - 1, 1)), label=campus)
+
+ax3.set_xlabel("Fall term")
+ax3.set_ylabel("UC admit rate")
+ax3.set_title("Admit rate by campus, 2010–2025", fontsize=11)
+ax3.legend(bbox_to_anchor=(1.02, 1), loc="upper left", fontsize="small", frameon=False)
+st.pyplot(fig3, use_container_width=True)
+
+st.caption("Built for the UC Dashboard Construction hackathon project · Data: UC Information Center + California Department of Education")
