@@ -34,7 +34,7 @@ year from 2005 to 2025.
    as an interactive Streamlit dashboard (`app.py`), where the year can be
    changed via a dropdown.
 6. Extended the dashboard beyond the single-year campus comparison with
-   two additional views:
+   three additional views:
    - **School drill-in:** pick any individual Bay Area high school (from
      the selected year) and see its admit rate at each campus, plotted
      against the Bay Area-wide average per campus for reference.
@@ -42,6 +42,11 @@ year from 2005 to 2025.
      rate over every available fall term (2010–2025), so campus
      selectivity can be compared as a trend rather than a single
      snapshot.
+   - **Demographic breakdown:** pick a campus and see admit rate by
+     demographic group (African American, American Indian, Asian,
+     Hispanic/Latinx, International, Pacific Islander, White, and
+     domestic/unknown), summed the same way as the campus-level
+     numbers (sum admits and applicants per group, then divide).
 
 ## Findings
 
@@ -68,6 +73,10 @@ small number of applicants to that campus in a given year.
   admission differences.
 - Fall 2005–2009 is excluded entirely due to lack of per-campus granularity
   (see Time window above).
+- Demographic subgroup counts (in the demographic breakdown view) do not
+  always sum to the overall campus total. The source data suppresses small
+  group counts for privacy, so some students aren't captured in any
+  demographic category shown.
 
 ## Files
 
