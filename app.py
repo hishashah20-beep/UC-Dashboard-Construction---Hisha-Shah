@@ -7,7 +7,7 @@ st.set_page_config(page_title="UC Admit Rates by Campus", layout="centered")
 st.title("UC Admit Rate by Campus")
 st.write(
     "How did UC admit rates differ across the nine campuses for Bay Area "
-    "high school applicants in fall 2025?"
+    "high school applicants?"
 )
 
 @st.cache_data
