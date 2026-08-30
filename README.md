@@ -3,9 +3,9 @@
 ## Question
 
 How did UC admit rates differ across the nine campuses for Bay Area high
-school applicants in fall 2025?
+school applicants from years 2005 to 2025?
 
-- **Time window:** Fall 2025
+- **Time window:** Fall 2005–2025 (user-selectable via dropdown in the dashboard)
 - **Population:** Bay Area public high school applicants
 - **Metric:** UC admit rate (admits ÷ applicants) by campus
 
@@ -14,11 +14,12 @@ school applicants in fall 2025?
 `bay_area_modeling_table.csv` from the provided UC Admissions Data collection
 (UC Information Center + California Department of Education, joined at the
 school-year-campus level). Each row represents one high school, in one year,
-at one UC campus.
+at one UC campus. Applicant/admit/enrollee counts are available for every
+year from 2005 to 2025.
 
 ## Method
 
-1. Filtered the data to `fall_term == 2025`.
+1. Let the user pick a fall term via a dropdown (defaults to 2025).
 2. Excluded rows where `campus == "Universitywide"`. That row counts distinct
    *students* admitted to at least one UC campus, not application counts per
    campus, so including it would double-count and distort the comparison.
@@ -35,12 +36,14 @@ at one UC campus.
 
 ## Findings
 
-Admit rates varied dramatically by campus for fall 2025 Bay Area applicants,
-ranging from under 12% at the most selective campuses (Los Angeles,
-Berkeley) to over 89% at the least selective (Riverside, Merced). This
-reflects well-known and consistent differences in campus selectivity across
-the UC system, rather than a subtle statistical pattern — making it a clear,
-visually distinct result even after aggregating a large and noisy dataset.
+Admit rates vary dramatically by campus, with the same overall pattern
+holding across most years we checked: Merced and Riverside are consistently
+the least selective (often 80–95%+ admit rate), while Los Angeles and
+Berkeley are consistently the most selective (often under 15%). This
+reflects well-known, persistent differences in campus selectivity across
+the UC system rather than a subtle statistical pattern, making it a clear,
+visually distinct result even after aggregating a large and noisy dataset
+across two decades.
 
 ## Files
 
