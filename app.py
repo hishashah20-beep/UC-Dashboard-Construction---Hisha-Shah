@@ -42,4 +42,12 @@ ax.set_xlabel("UC admit rate")
 st.pyplot(fig)
 
 st.subheader("Underlying numbers")
-st.dataframe(campus_summary.set_index("campus"))
+st.dataframe(
+    campus_summary.set_index("campus"),
+    column_config={
+        "admit_rate": st.column_config.NumberColumn(
+            "admit_rate",
+            format="%.1f%%",
+        )
+    },
+)
