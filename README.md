@@ -5,7 +5,7 @@
 How did UC admit rates differ across the nine campuses for Bay Area high
 school applicants from years 2010 to 2025?
 
-- **Time window:** Fall 2010–2025 (user-selectable via dropdown in the dashboard). Fall 2005–2009 only has systemwide ("Universitywide") totals in this dataset, not a per-campus breakdown, so those years are excluded from the dropdown.
+- **Time window:** Fall 2010–2025 (user-selectable via dropdown in the dashboard, defaults to 2025). The underlying dataset has per-campus data back to 2005, but Fall 2005–2009 only has systemwide ("Universitywide") totals, not a per-campus breakdown, so those years are excluded from the dropdown and from this analysis.
 - **Population:** Bay Area public high school applicants
 - **Metric:** UC admit rate (admits ÷ applicants) by campus
 
@@ -45,6 +45,14 @@ the UC system rather than a subtle statistical pattern, making it a clear,
 visually distinct result even after aggregating a large and noisy dataset
 across two decades.
 
+## Limitations
+
+- Admit rate is a function of both selectivity *and* who chooses to apply;
+  it doesn't capture yield, financial aid effects, or major-specific
+  admission differences.
+- Fall 2005–2009 is excluded entirely due to lack of per-campus granularity
+  (see Time window above).
+
 ## Files
 
 - `app.py` — Streamlit dashboard source code
@@ -52,6 +60,17 @@ across two decades.
 - `bay_area_modeling_table.csv` — dataset used
 - `*.ipynb` — Colab notebook with the original analysis
 
+## Run locally
+
+```bash
+git clone https://github.com/hishashah20-beep/UC-Dashboard-Construction---Hisha-Shah.git
+cd UC-Dashboard-Construction---Hisha-Shah
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+The dashboard will open at `http://localhost:8501`.
+
 ## Live app
 
-Deployed via Streamlit Community Cloud: *(https://uc-dashboard-construction---hisha-24qhqujecdftnodmwful9a.streamlit.app/)*
+Deployed via Streamlit Community Cloud: https://uc-dashboard-construction---hisha-24qhqujecdftnodmwful9a.streamlit.app/
