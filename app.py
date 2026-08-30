@@ -3,7 +3,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="UC Admit Rates by Campus", layout="centered")
-
 st.title("UC Admit Rate by Campus")
 st.write(
     "How did UC admit rates differ across the nine campuses for Bay Area "
@@ -26,11 +25,9 @@ y = df[(df.fall_term == selected_year) & (df.campus != "Universitywide")]
 
 campus_summary = (
     y.groupby("campus")
-     .apply(lambda g: pd.Series({
-         "total_applicants": g.applicants.sum(),
-         "total_admits": g.admits.sum(),
-         "admit_rate": g.admits.sum() / g.applicants.sum()
-     }))
+     .agg(total_applicants=("applicants", "sum"),
+          total_admits=("admits", "sum"))
+     .assign(admit_rate=lambda d: d.total_admits / d.total_applicants)
      .reset_index()
      .sort_values("admit_rate")
 )
@@ -42,8 +39,11 @@ ax.set_xlabel("UC admit rate")
 st.pyplot(fig)
 
 st.subheader("Underlying numbers")
+display_summary = campus_summary.set_index("campus").copy()
+display_summary["admit_rate"] = display_summary["admit_rate"] * 100
+
 st.dataframe(
-    campus_summary.set_index("campus"),
+    display_summary,
     column_config={
         "admit_rate": st.column_config.NumberColumn(
             "admit_rate",
