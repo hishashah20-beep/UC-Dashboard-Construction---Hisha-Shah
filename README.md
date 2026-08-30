@@ -5,9 +5,6 @@
 How did UC admit rates differ across the nine campuses for Bay Area high
 school applicants from years 2010 to 2025?
 
-This is explored four ways in the dashboard: by campus, by individual
-high school, over time, and by demographic group.
-
 - **Time window:** Fall 2010–2025 (user-selectable via dropdown in the dashboard, defaults to 2025). The underlying dataset has per-campus data back to 2005, but Fall 2005–2009 only has systemwide ("Universitywide") totals, not a per-campus breakdown, so those years are excluded from the dropdown and from this analysis.
 - **Population:** Bay Area public high school applicants
 - **Metric:** UC admit rate (admits ÷ applicants) by campus
@@ -50,6 +47,10 @@ year from 2005 to 2025.
      Hispanic/Latinx, International, Pacific Islander, White, and
      domestic/unknown), summed the same way as the campus-level
      numbers (sum admits and applicants per group, then divide).
+   - **Academic outcomes vs. admit rate:** pick a campus and see a
+     scatter plot of each Bay Area high school's CAASPP mathematics
+     mean score against that school's admit rate at the selected
+     campus, with a trendline and a correlation coefficient (r).
 
 ## Findings
 
@@ -68,6 +69,11 @@ campuses are persistent, not a one-year anomaly. The school drill-in shows
 that any individual high school's admit rate at a given campus can deviate
 noticeably from the Bay Area-wide average, especially for schools with a
 small number of applicants to that campus in a given year.
+
+The academic outcomes view shows only a weak relationship between a
+school's CAASPP math scores and its admit rate at a given campus (for
+example, r ≈ 0.2 at Berkeley) — meaning UC admit rate is driven by much
+more than a school's aggregate test performance.
 
 ## Limitations
 
