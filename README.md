@@ -5,6 +5,9 @@
 How did UC admit rates differ across the nine campuses for Bay Area high
 school applicants from years 2010 to 2025?
 
+This is explored four ways in the dashboard: by campus, by individual
+high school, over time, and by demographic group.
+
 - **Time window:** Fall 2010–2025 (user-selectable via dropdown in the dashboard, defaults to 2025). The underlying dataset has per-campus data back to 2005, but Fall 2005–2009 only has systemwide ("Universitywide") totals, not a per-campus breakdown, so those years are excluded from the dropdown and from this analysis.
 - **Population:** Bay Area public high school applicants
 - **Metric:** UC admit rate (admits ÷ applicants) by campus
