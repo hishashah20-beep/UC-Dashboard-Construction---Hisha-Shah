@@ -33,6 +33,15 @@ year from 2005 to 2025.
    chart, both in a Google Colab notebook (`.ipynb` file in this repo) and
    as an interactive Streamlit dashboard (`app.py`), where the year can be
    changed via a dropdown.
+6. Extended the dashboard beyond the single-year campus comparison with
+   two additional views:
+   - **School drill-in:** pick any individual Bay Area high school (from
+     the selected year) and see its admit rate at each campus, plotted
+     against the Bay Area-wide average per campus for reference.
+   - **Trend over time:** a multi-select of campuses plotted as admit
+     rate over every available fall term (2010–2025), so campus
+     selectivity can be compared as a trend rather than a single
+     snapshot.
 
 ## Findings
 
@@ -44,6 +53,13 @@ reflects well-known, persistent differences in campus selectivity across
 the UC system rather than a subtle statistical pattern, making it a clear,
 visually distinct result even after aggregating a large and noisy dataset
 across two decades.
+
+The trend view shows this ranking has stayed fairly stable across 2010–2025
+rather than campuses swapping places — selectivity differences between UC
+campuses are persistent, not a one-year anomaly. The school drill-in shows
+that any individual high school's admit rate at a given campus can deviate
+noticeably from the Bay Area-wide average, especially for schools with a
+small number of applicants to that campus in a given year.
 
 ## Limitations
 
